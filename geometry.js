@@ -24,7 +24,7 @@
 
   // A big square with a small corner removed, beside the same area as a rectangle.
   function gnomon(s, u, k) {
-    const top = 18, left = 8, big = s * k, small = u * k;
+    const top = 28, left = 8, big = s * k, small = u * k;
     const rx = left + big + 18, rw = (s + u) * k, rh = Math.max((s - u) * k, 2.5);
     return `<rect x="${left}" y="${top}" width="${big}" height="${big}" class="g-fill"></rect>` +
       `<rect x="${left}" y="${top + big - small}" width="${small}" height="${small}" class="g-hole"></rect>` +
@@ -65,7 +65,7 @@
         params: { deg: { min: 0, max: 359, step: 1, value: 110, name: "点 P 绕圆的角度" } },
         draw({ deg }) {
           const t = (deg * Math.PI) / 180, a = Math.sqrt(5) * Math.cos(t), b = Math.sqrt(5) * Math.sin(t);
-          const u = 2 * a + b, v = 2 * b - a, cx = 95, cy = 150, k = 34, ox = 205, oy = 270, q = 40;
+          const u = 2 * a + b, v = 2 * b - a, cx = 104, cy = 150, k = 34, ox = 215, oy = 262, q = 40;
           const tx = ox + Math.abs(v) * q, ty = oy - Math.abs(u) * q;
           const hit = Math.abs(u) > 4.995 && u > 0;
           const body = circlePlane(cx, cy, k) +
@@ -113,7 +113,7 @@
           const small = Math.min(u, s - 1), area = s * s - small * small;
           const hit = area === 61;
           return {
-            svg: svg(420, 170, gnomon(s, small, 3), "L 形与长方形"),
+            svg: svg(420, 180, gnomon(s, small, 3), "L 形与长方形"),
             readout: R`面积 $=${s}^2-${small}^2=${s + small}\times${s - small}=${area}$` + (hit ? "，正是 $61$" : "，目标是 $61$"),
             hit,
           };
@@ -134,7 +134,7 @@
             label(left + (k + 1) * c + 10, top + 14, `${k} × ${k + 1}`, "", "start") +
             label(left + (k + 1) * c + 10, top + 38, "减去 15 格", "", "start");
           return {
-            svg: svg(320, 190, body, "长方形方格"),
+            svg: svg(420, 190, body, "长方形方格"),
             readout: R`$k^2+k-15=${value}$` + (hit ? R` $=${root}^2$，此时 $x=k^2-15=${k * k - 15}$` : "，不是完全平方数"),
             hit,
           };
@@ -174,7 +174,7 @@
         draw({ m }) {
           const a = Math.sqrt(m * m + 21), b = Math.sqrt(m * m + 5), hit = Math.abs(m - 2) < 1e-6;
           return {
-            svg: svg(420, 170, gnomon(a, b, 22), "L 形与长方形"),
+            svg: svg(420, 180, gnomon(a, b, 22), "L 形与长方形"),
             readout: R`长方形：$${f(a + b)}\times${f(a - b)}=${f((a + b) * (a - b))}$`,
             hit,
           };
@@ -189,9 +189,9 @@
           const body = line(X(0), base, X(40), base, "g-axis") +
             [[k - 8, "k−8"], [k, "k"], [k + 8, "k+8"]].map(([n, t]) =>
               `<circle cx="${X(n)}" cy="${base}" r="6" class="g-dot"></circle>` + label(X(n), base - 14, t) + label(X(n), base + 24, n)).join("") +
-            `<rect x="16" y="130" width="${lo * 36}" height="24" class="g-fill"></rect>` +
-            `<rect x="${16 + lo * 36}" y="130" width="${hi * 36}" height="24" class="g-cut"></rect>` +
-            line(16 + 8 * 36, 120, 16 + 8 * 36, 164, "g-accent") + label(16 + 8 * 36, 114, "8");
+            `<rect x="16" y="130" width="${lo * 30}" height="24" class="g-fill"></rect>` +
+            `<rect x="${16 + lo * 30}" y="130" width="${hi * 30}" height="24" class="g-cut"></rect>` +
+            line(16 + 8 * 30, 120, 16 + 8 * 30, 164, "g-accent") + label(16 + 8 * 30, 114, "8");
           return {
             svg: svg(390, 175, body, "数轴上的中点"),
             readout: R`$\sqrt{k-8}+\sqrt{k+8}=${f(lo)}+${f(hi)}=${f(lo + hi)}$（目标 $8$）`,
