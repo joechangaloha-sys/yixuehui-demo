@@ -90,7 +90,28 @@ table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.
 th, td { text-align: left; padding: 8px 10px 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
 th { color: var(--muted); font-weight: 500; border-top: 0; }
 .gloss { overflow-x: auto; }
-footer { color: var(--muted); font-size: 13px; line-height: 1.6; margin-top: 18px; }
+.lens-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.lens-tab { background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 4px 13px; font-size: 14px; }
+.lens-tab[aria-pressed="true"] { background: var(--teal-soft); border-color: var(--teal); color: var(--teal); font-weight: 600; }
+.lens-path { color: var(--muted); font-size: 13px; margin: 0 0 4px; }
+.lens-caption { margin: 0 0 10px; }
+.geo { display: block; width: 100%; max-height: 340px; margin: 6px 0; overflow: hidden; }
+.g-text { fill: var(--muted); font-size: 14px; }
+.g-strong { fill: var(--teal); font-weight: 700; }
+.g-axis, .g-dash { stroke: var(--muted); stroke-width: 1; }
+.g-dash { stroke-dasharray: 4 4; }
+.g-main { fill: none; stroke: var(--ink); stroke-width: 2; }
+.g-main-line { stroke: var(--ink); stroke-width: 2; }
+.g-accent { stroke: var(--teal); stroke-width: 2.5; }
+.g-thick { stroke: var(--amber); stroke-width: 5; stroke-linecap: round; }
+.g-dot { fill: var(--teal); stroke: var(--card); stroke-width: 2; }
+.g-fill { fill: var(--teal-soft); stroke: var(--teal); stroke-width: 1; }
+.g-hole { fill: var(--card); stroke: var(--teal); stroke-width: 1; stroke-dasharray: 3 3; }
+.g-cut { fill: var(--amber-soft); stroke: var(--amber); stroke-width: 1; }
+.slider { display: block; margin-top: 8px; font-size: 14px; color: var(--muted); }
+.slider input { display: block; width: 100%; margin-top: 2px; accent-color: var(--teal); }
+.readout { margin-top: 8px; padding: 8px 12px; border-radius: 10px; background: var(--bg); overflow-x: auto; }
+.readout.hit { background: var(--good-soft); }footer { color: var(--muted); font-size: 13px; line-height: 1.6; margin-top: 18px; }
 .katex { font-size: 1.05em; }
 @media (max-width: 480px) {
   h1 { font-size: 26px; } .statement { font-size: 18px; } .card { padding: 16px; }
@@ -107,8 +128,7 @@ footer { color: var(--muted); font-size: 13px; line-height: 1.6; margin-top: 18p
     <p class="eyebrow">易学会 · 九年级 · 第 04 节</p>
     <h1>一道题，不止一条路</h1>
     <p class="lead" id="intro"></p>
-    <div class="progress"><div class="bar"><i id="bar"></i></div><span id="count"></span></div>
-  </header>
+    <div class="progress"><div class="bar"><i id="bar"></i></div><span id="count"></span></div>  </header>
   <div class="tabs" role="tablist" id="tabs"></div>
   <main id="app"></main>
   <section class="card gloss">
@@ -117,13 +137,12 @@ footer { color: var(--muted); font-size: 13px; line-height: 1.6; margin-top: 18p
     <table id="glossary"></table>
   </section>
   <footer>
-    题目与解法改编自《易学会·九年级》第 04 节（第 35–41 页），版权归原作者所有，并改正了少量印刷笔误。第一步选项、提示和方法对比为本演示另行草拟，尚未经作者审核。进度只保存在你自己的浏览器中。
+    题目与解法改编自《易学会·九年级》第 04 节（第 35–41 页），版权归原作者所有，并改正了少量印刷笔误。第一步选项、提示、方法对比和几何视角为本演示另行草拟，尚未经作者审核。进度只保存在你自己的浏览器中。
     <div class="row"><button class="linkish" id="reset">清除进度，重新开始</button></div>
   </footer>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+</div><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 <script src="data.js"></script>
-<script src="app.js"></script>
+<script src="geometry.js"></script><script src="app.js"></script>
 </body>
 </html>

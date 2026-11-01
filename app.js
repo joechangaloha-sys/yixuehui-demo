@@ -171,11 +171,73 @@
       ${renderMap(p, s)}
       ${renderWalk(p, s)}
       ${renderCompare(p, s)}
+      <section class="card" id="lens"></section>
       ${allDone && nextIndex < lesson.problems.length
         ? `<div class="row" style="margin-bottom:14px"><button class="btn" data-act="nextProblem">所有路都走通了，去第 ${nextIndex + 1} 题</button></div>`
         : ""}
     `;
     math(app);
+    mountLens(p, s);
+  }
+
+  // Lens state lives outside render() so sliders keep their position between redraws.
+  const lensState = {};
+
+  function mountLens(p, s) {
+    const box = document.getElementById("lens");
+    const lenses = window.LENSES[p.id];
+    if (!s.opened) {
+      box.innerHTML = `<h2>换个角度看：代数的几何样子</h2><p class="lockmsg" style="margin:0">这里会用图形揭示答案，所以和解法地图一起解锁。</p>`;
+      return;
+    }
+    const st = lensState[p.id] || (lensState[p.id] = { index: 0, values: {} });
+    const lens = lenses[st.index];
+    const values = st.values[st.index] || (st.values[st.index] = {});
+    Object.keys(lens.params).forEach((k) => { if (values[k] === undefined) values[k] = lens.params[k].value; });
+
+    const tabs = lenses.map((l, i) =>
+      `<button class="lens-tab" aria-pressed="${i === st.index}" data-lens="${i}">${l.title}</button>`).join("");
+    const sliders = Object.keys(lens.params).map((k) => {
+      const c = lens.params[k];
+      return `<label class="slider">${c.name}：<b data-out="${k}"></b><input type="range" data-param="${k}" min="${c.min}" max="${c.max}" step="${c.step}" value="${values[k]}"></label>`;
+    }).join("");
+    box.innerHTML = `
+      <h2>换个角度看：代数的几何样子</h2>
+      <p class="sub">拖动滑块，看算式和图形一起变化。</p>
+      <div class="lens-tabs">${tabs}</div>
+      <p class="lens-path">对应解法：${lens.path}</p>
+      <p class="lens-caption">${lens.caption}</p>
+      <div id="lensFigure"></div>
+      ${sliders}
+      <div class="readout" id="lensReadout"></div>`;
+    math(box.querySelector(".lens-caption"));
+
+    const update = () => {
+      const out = lens.draw(values);
+      document.getElementById("lensFigure").innerHTML = out.svg;
+      const readout = document.getElementById("lensReadout");
+      readout.innerHTML = out.readout;
+      readout.classList.toggle("hit", Boolean(out.hit));
+      math(readout);
+      Object.keys(lens.params).forEach((k) => {
+        box.querySelector(`[data-out="${k}"]`).textContent = Number(values[k].toFixed(2));
+      });
+    };
+    update();
+
+    box.querySelectorAll("[data-param]").forEach((input) => {
+      input.addEventListener("input", () => {
+        values[input.dataset.param] = Number(input.value);
+        update();
+      });
+    });
+    box.querySelectorAll("[data-lens]").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        st.index = Number(button.dataset.lens);
+        mountLens(p, s);
+      });
+    });
   }
 
   function render() {

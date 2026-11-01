@@ -11,9 +11,9 @@ It covers section 04, 初见换元法 (pp.35–41): 3 problems and 11 solution p
 - A map of solution paths, revealed one step at a time
 - A comparison of the methods a student has completed
 - A Chinese / Japanese / English glossary of key terms
-
+- Interactive geometric views that link algebra to circles, triangles and areas
 ## Content notes
-The problems and solutions are adapted from the workbook. The first-move options, hints, method comparisons and glossary were drafted for this demo and have not been reviewed by the author.
+The problems and solutions are adapted from the workbook. The first-move options, hints, method comparisons, geometric views and glossary were drafted for this demo and have not been reviewed by the author.
 
 Printing errors corrected from the source:
 - p.36: `5x²−4mx` is now `5a²−4Ma`, and `√m` is now `√M`
