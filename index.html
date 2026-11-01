@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>一题多路 · 初见换元法</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+:root {
+  --bg: #f6f5f0; --card: #ffffff; --ink: #1d2a2c; --muted: #647174; --line: #dcdcd3;
+  --teal: #0b7f86; --teal-soft: #dff0f0; --on-teal: #ffffff;
+  --amber: #a85f00; --amber-soft: #fbf0dc; --good: #1b7a4b; --good-soft: #e0f3e8; --bad: #b23b3b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12191a; --card: #1b2425; --ink: #e7eded; --muted: #9aa8aa; --line: #324042;
+    --teal: #4cc0c6; --teal-soft: #173638; --on-teal: #082022;
+    --amber: #eeb35e; --amber-soft: #392b15; --good: #6bd19b; --good-soft: #17352a; --bad: #ef8d8d;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.75 "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 56px; }
+.demo { font-size: 13px; color: var(--muted); padding: 10px 0; border-bottom: 1px solid var(--line); line-height: 1.5; }
+header { padding: 30px 0 16px; }
+.eyebrow { color: var(--teal); font-size: 14px; font-weight: 600; margin: 0; }
+h1 { font-size: 30px; line-height: 1.25; margin: 4px 0 8px; }
+.lead { color: var(--muted); margin: 0; }
+.progress { margin-top: 16px; display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--muted); }
+.bar { flex: 1; height: 8px; background: var(--line); border-radius: 8px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--teal); transition: width .35s; }
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; }
+.tab { background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 8px 6px; text-align: center; line-height: 1.35; }
+.tab small { display: block; color: var(--muted); font-size: 12px; }
+.tab[aria-selected="true"] { background: var(--teal); border-color: var(--teal); color: var(--on-teal); }
+.tab[aria-selected="true"] small { color: inherit; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 14px; }
+.statement { font-size: 20px; line-height: 1.7; margin: 0; overflow-x: auto; }
+h2 { font-size: 17px; margin: 0 0 10px; }
+.sub { color: var(--muted); font-size: 14px; margin: -6px 0 12px; }
+.moves { display: grid; gap: 8px; }
+.move { text-align: left; background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.move:hover { border-color: var(--teal); }
+.move[aria-pressed="true"] { border-color: var(--teal); background: var(--teal-soft); }
+.note { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--amber-soft); }
+.answer { display: flex; flex-wrap: wrap; gap: 8px; }
+.answer input { flex: 1 1 170px; min-width: 0; background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; }
+.btn { background: var(--teal); border: 1px solid var(--teal); color: var(--on-teal); border-radius: 10px; padding: 9px 16px; font-weight: 600; }
+.btn.ghost { background: transparent; color: var(--teal); }
+.btn.small { padding: 5px 11px; font-size: 14px; font-weight: 500; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.feedback { margin-top: 10px; padding: 10px 12px; border-radius: 10px; }
+.feedback.good { background: var(--good-soft); color: var(--good); font-weight: 600; }
+.feedback.warn { background: var(--amber-soft); }
+.hint { padding: 8px 0; border-top: 1px dashed var(--line); }
+.hint b { color: var(--amber); font-size: 13px; margin-right: 6px; }
+.linkish { background: none; border: 0; padding: 0; color: var(--muted); text-decoration: underline; font-size: 14px; }
+
+.map { display: grid; grid-template-columns: 44px 40px minmax(0, 1fr) 40px 44px; align-items: stretch; margin-top: 4px; }
+.terminal { align-self: center; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; font-weight: 700; border: 2px solid var(--teal); color: var(--teal); background: var(--card); }
+.terminal.end.lit { background: var(--teal); color: var(--on-teal); }
+.wires { width: 100%; height: 100%; display: block; overflow: visible; }
+.wires path { fill: none; stroke: var(--line); stroke-width: 2; stroke-dasharray: 5 5; vector-effect: non-scaling-stroke; }
+.wires path.done { stroke: var(--teal); stroke-dasharray: none; stroke-width: 2.5; }
+.routes { display: grid; gap: 8px; }
+.route { min-height: 54px; width: 100%; text-align: left; background: var(--card); border: 1.5px solid var(--line); border-radius: 10px; padding: 6px 12px; line-height: 1.35; }
+.route small { display: block; color: var(--muted); font-size: 12px; }
+.route:hover:not(:disabled) { border-color: var(--teal); }
+.route:disabled { cursor: default; color: var(--muted); border-style: dashed; }
+.route.done { border-color: var(--teal); background: var(--teal-soft); }
+.route.active { box-shadow: 0 0 0 2px var(--teal); }
+.lockmsg { color: var(--muted); font-size: 14px; margin: 12px 0 0; }
+
+.walk h3 { margin: 0 0 4px; font-size: 18px; }
+.walk .idea { color: var(--muted); margin: 0 0 12px; font-size: 15px; }
+.steps { list-style: none; margin: 0; padding: 0; }
+.steps li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 8px; padding: 8px 0; border-top: 1px solid var(--line); }
+.steps li > span:first-child { width: 24px; height: 24px; margin-top: 3px; border-radius: 50%; background: var(--teal-soft); color: var(--teal); font-size: 13px; font-weight: 700; display: grid; place-items: center; }
+.steps li > span:last-child { overflow-x: auto; overflow-y: hidden; }
+.compare { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.5; min-width: 460px; }
+th, td { text-align: left; padding: 8px 10px 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; border-top: 0; }
+.gloss { overflow-x: auto; }
+footer { color: var(--muted); font-size: 13px; line-height: 1.6; margin-top: 18px; }
+.katex { font-size: 1.05em; }
+@media (max-width: 480px) {
+  h1 { font-size: 26px; } .statement { font-size: 18px; } .card { padding: 16px; }
+  .map { grid-template-columns: 36px 22px minmax(0, 1fr) 22px 36px; }
+  .terminal { width: 36px; height: 36px; font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="demo">非官方演示 · Unofficial concept demo：展示这本练习册放到网页上可能的样子，并非正式产品。</div>
+  <header>
+    <p class="eyebrow">易学会 · 九年级 · 第 04 节</p>
+    <h1>一道题，不止一条路</h1>
+    <p class="lead" id="intro"></p>
+    <div class="progress"><div class="bar"><i id="bar"></i></div><span id="count"></span></div>
+  </header>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <main id="app"></main>
+  <section class="card gloss">
+    <h2>数学术语对照</h2>
+    <p class="sub">孩子在日本或海外上学，家长也能看懂同一个概念。</p>
+    <table id="glossary"></table>
+  </section>
+  <footer>
+    题目与解法改编自《易学会·九年级》第 04 节（第 35–41 页），版权归原作者所有，并改正了少量印刷笔误。第一步选项、提示和方法对比为本演示另行草拟，尚未经作者审核。进度只保存在你自己的浏览器中。
+    <div class="row"><button class="linkish" id="reset">清除进度，重新开始</button></div>
+  </footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
